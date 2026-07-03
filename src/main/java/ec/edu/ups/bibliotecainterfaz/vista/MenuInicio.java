@@ -261,7 +261,6 @@ public class MenuInicio extends javax.swing.JFrame {
         gbc.gridy = 0;
         gbc.anchor = java.awt.GridBagConstraints.CENTER;
 
-        // Título
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36));
         jLabel1.setForeground(new java.awt.Color(255, 255, 255)); 
         jLabel1.setText("SISTEMA DIGITAL DE BIBLIOTECA");
@@ -269,7 +268,31 @@ public class MenuInicio extends javax.swing.JFrame {
 
       
         gbc.gridy = 1;
-        javax.swing.JPanel pnlBotones = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 30, 0));
+        String rutaBase = "C:\\Users\\HP\\Documents\\NetBeansProjects\\BibliotecaInterfaz\\src\\main\\java\\ec\\edu\\ups\\bibliotecainterfaz\\imagenes\\";
+        
+        java.util.function.BiConsumer<javax.swing.JButton, String> ponerIcono = (btn, archivo) -> {
+            try {
+                java.awt.Image iconImg = new javax.swing.ImageIcon(rutaBase + archivo).getImage();
+                if(iconImg != null && iconImg.getWidth(null) > 0) {
+                    
+                    btn.setIcon(new javax.swing.ImageIcon(iconImg.getScaledInstance(80, 80, java.awt.Image.SCALE_SMOOTH)));
+                }
+            } catch(Exception e){}
+            
+            btn.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM); 
+            btn.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER); 
+            btn.setContentAreaFilled(false); 
+            btn.setBorderPainted(false); 
+            btn.setFocusPainted(false);
+            btn.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR)); 
+        };
+
+       
+        ponerIcono.accept(btnEntrar, "entrar.png");
+        ponerIcono.accept(btnSalir, "salida.png");
+       
+
+        javax.swing.JPanel pnlBotones = new javax.swing.JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 50, 0));
         pnlBotones.setOpaque(false); 
         pnlBotones.add(btnEntrar);
         pnlBotones.add(btnSalir);
