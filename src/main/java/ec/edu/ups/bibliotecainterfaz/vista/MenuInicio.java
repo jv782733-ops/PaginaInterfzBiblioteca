@@ -311,6 +311,7 @@ public class MenuInicio extends javax.swing.JFrame {
         this.revalidate();
         this.repaint();
     }
+    // cambio para commit
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnEntrar;
