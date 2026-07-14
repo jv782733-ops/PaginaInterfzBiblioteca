@@ -8,7 +8,8 @@ package ec.edu.ups.bibliotecainterfaz.modelo;
  *
  * @author HP
  */
-public class Libro {
+public class Libro implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
     private String codigo;
     private String titulo;
     private String autor;

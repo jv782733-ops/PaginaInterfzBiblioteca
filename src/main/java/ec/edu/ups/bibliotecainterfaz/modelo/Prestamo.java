@@ -10,7 +10,8 @@ import java.util.Date;
  *
  * @author HP
  */
-public class Prestamo {
+public class Prestamo implements java.io.Serializable {
+    private static final long serialVersionUID = 1L;
     private Libro libro;
     private Usuario usuario;
     private Date fechaPrestamo;
