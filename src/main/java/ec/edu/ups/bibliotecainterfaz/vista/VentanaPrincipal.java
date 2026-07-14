@@ -5,7 +5,6 @@
 package ec.edu.ups.bibliotecainterfaz.vista;
 
 import ec.edu.ups.bibliotecainterfaz.controlador.BibliotecaControlador;
-import ec.edu.ups.bibliotecainterfaz.controlador.BibliotecaControlador.IdiomaContext;
 import java.util.ResourceBundle;
 
 /**
@@ -17,6 +16,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VentanaPrincipal.class.getName());
     private BibliotecaControlador controlador;
     private ResourceBundle mensajes;
+    private VistaLibro vistaLibroAbierta;
+    private VistaUsuario vistaUsuarioAbierta;
+    private VistaPrestamo vistaPrestamoAbierta;
+    private VistaDevolucion vistaDevolucionAbierta;
     /**
      * Creates new form VentanaPrincipal
      */
@@ -106,28 +109,60 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
-        VistaDevolucion vistaD = new VistaDevolucion(controlador, mensajes);
-        desktopContenedor.add(vistaD);
-        vistaD.setVisible(true);
+        if (vistaDevolucionAbierta == null || vistaDevolucionAbierta.isClosed()) {
+            vistaDevolucionAbierta = new VistaDevolucion(controlador, mensajes);
+            desktopContenedor.add(vistaDevolucionAbierta);
+        } else {
+            vistaDevolucionAbierta.actualizarIdioma(mensajes);
+        }
+        vistaDevolucionAbierta.setVisible(true);
+        traerAlFrente(vistaDevolucionAbierta);
     }//GEN-LAST:event_jMenuItem4ActionPerformed
 
     private void btnPrestamosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPrestamosActionPerformed
-        VistaPrestamo vistaP = new VistaPrestamo(controlador, mensajes);
-        desktopContenedor.add(vistaP);
-        vistaP.setVisible(true);
+        if (vistaPrestamoAbierta == null || vistaPrestamoAbierta.isClosed()) {
+            vistaPrestamoAbierta = new VistaPrestamo(controlador, mensajes);
+            desktopContenedor.add(vistaPrestamoAbierta);
+        } else {
+            vistaPrestamoAbierta.cargarTabla();
+            vistaPrestamoAbierta.actualizarIdioma(mensajes);
+        }
+        vistaPrestamoAbierta.setVisible(true);
+        traerAlFrente(vistaPrestamoAbierta);
     }//GEN-LAST:event_btnPrestamosActionPerformed
 
     private void btnUsuariosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuariosActionPerformed
-        VistaUsuario vistaU = new VistaUsuario(this.controlador, this.mensajes);
-        desktopContenedor.add(vistaU);
-        vistaU.setVisible(true);
+        if (vistaUsuarioAbierta == null || vistaUsuarioAbierta.isClosed()) {
+            vistaUsuarioAbierta = new VistaUsuario(this.controlador, this.mensajes);
+            desktopContenedor.add(vistaUsuarioAbierta);
+        } else {
+            vistaUsuarioAbierta.cargarTabla();
+            vistaUsuarioAbierta.actualizarIdioma(this.mensajes);
+        }
+        vistaUsuarioAbierta.setVisible(true);
+        traerAlFrente(vistaUsuarioAbierta);
     }//GEN-LAST:event_btnUsuariosActionPerformed
 
     private void btnLibrosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLibrosActionPerformed
-        VistaLibro vistaL = new VistaLibro(controlador, mensajes);
-        desktopContenedor.add(vistaL);
-        vistaL.setVisible(true);
+        if (vistaLibroAbierta == null || vistaLibroAbierta.isClosed()) {
+            vistaLibroAbierta = new VistaLibro(controlador, mensajes);
+            desktopContenedor.add(vistaLibroAbierta);
+        } else {
+            vistaLibroAbierta.cargarTabla();
+            vistaLibroAbierta.actualizarIdioma();
+        }
+        vistaLibroAbierta.setVisible(true);
+        traerAlFrente(vistaLibroAbierta);
     }//GEN-LAST:event_btnLibrosActionPerformed
+
+    private void traerAlFrente(javax.swing.JInternalFrame ventana) {
+        try {
+            ventana.setSelected(true);
+        } catch (java.beans.PropertyVetoException ex) {
+            // ignorar, no es critico
+        }
+        ventana.toFront();
+    }
 
     /**
      * @param args the command line arguments
@@ -154,7 +189,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         System.out.println("Ventana Principal lista. Inicie desde MenuInicio.java");
     }
     public void actualizarIdioma() {
-    ResourceBundle mensajes = IdiomaContext.get();
+    ResourceBundle mensajes = this.mensajes;
+    if (mensajes == null) return;
 
     jMenu1.setText(mensajes.getString("opciones.menu"));
     btnLibros.setText(mensajes.getString("menu.libros"));
@@ -162,6 +198,13 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     btnPrestamos.setText(mensajes.getString("menu.prestamos"));
     jMenuItem4.setText(mensajes.getString("menu.devoluciones"));
     jMenu2.setText(mensajes.getString("menu.idioma"));
+
+    if (btnUsuariosCentro != null) {
+        btnUsuariosCentro.setText(mensajes.getString("menu.usuarios"));
+        btnLibrosCentro.setText(mensajes.getString("menu.libros"));
+        btnPrestamosCentro.setText(mensajes.getString("menu.prestamos"));
+        btnDevolucionesCentro.setText(mensajes.getString("menu.devoluciones"));
+    }
 }
     
   private void ponerFondoMadera() {
@@ -173,14 +216,16 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             protected void paintComponent(java.awt.Graphics g) {
                 super.paintComponent(g);
                 try {
-                    String rutaPrincipal = "C:\\Users\\HP\\Documents\\NetBeansProjects\\BibliotecaInterfaz\\src\\main\\java\\ec\\edu\\ups\\bibliotecainterfaz\\imagenes\\fondo2.jpg"; 
-                    java.awt.Image img = new javax.swing.ImageIcon(rutaPrincipal).getImage();
-                    
-                    if (img.getWidth(null) > 0) g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
-                    else {
-                        img = new javax.swing.ImageIcon(rutaPrincipal + ".jpeg").getImage();
-                        if (img.getWidth(null) > 0) g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
-                        else { g.setColor(java.awt.Color.RED); g.fillRect(0, 0, getWidth(), getHeight()); }
+                    java.net.URL urlFondo = getClass().getResource("/ec/edu/ups/bibliotecainterfaz/imagenes/fondo2.jpg");
+                    if (urlFondo == null) {
+                        urlFondo = getClass().getResource("/ec/edu/ups/bibliotecainterfaz/imagenes/fondo.jpg.jpeg");
+                    }
+                    if (urlFondo != null) {
+                        java.awt.Image img = new javax.swing.ImageIcon(urlFondo).getImage();
+                        g.drawImage(img, 0, 0, getWidth(), getHeight(), this);
+                    } else {
+                        g.setColor(new java.awt.Color(51, 51, 51));
+                        g.fillRect(0, 0, getWidth(), getHeight());
                     }
                 } catch (Exception e) {}
             }
@@ -198,10 +243,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         this.setContentPane(panelConFondo);
 
         
-        javax.swing.JButton btnUsuariosCentro = new javax.swing.JButton("Usuarios");
-        javax.swing.JButton btnLibrosCentro = new javax.swing.JButton("Libros");
-        javax.swing.JButton btnPrestamosCentro = new javax.swing.JButton("Préstamos");
-        javax.swing.JButton btnDevolucionesCentro = new javax.swing.JButton("Devoluciones");
+        btnUsuariosCentro = new javax.swing.JButton("Usuarios");
+        btnLibrosCentro = new javax.swing.JButton("Libros");
+        btnPrestamosCentro = new javax.swing.JButton("Préstamos");
+        btnDevolucionesCentro = new javax.swing.JButton("Devoluciones");
         
         
         btnUsuariosCentro.addActionListener(e -> btnUsuarios.doClick());
@@ -210,13 +255,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         btnDevolucionesCentro.addActionListener(e -> jMenuItem4.doClick());
 
         
-        String rutaBase = "C:\\Users\\HP\\Documents\\NetBeansProjects\\BibliotecaInterfaz\\src\\main\\java\\ec\\edu\\ups\\bibliotecainterfaz\\imagenes\\";
+        String rutaBase = "/ec/edu/ups/bibliotecainterfaz/imagenes/";
         
       
         java.util.function.BiConsumer<javax.swing.JButton, String> formatearBoton = (btn, archivo) -> {
             try {
-                java.awt.Image iconImg = new javax.swing.ImageIcon(rutaBase + archivo).getImage();
-                if(iconImg != null && iconImg.getWidth(null) > 0) {
+                java.net.URL urlIcono = getClass().getResource(rutaBase + archivo);
+                if (urlIcono != null) {
+                    java.awt.Image iconImg = new javax.swing.ImageIcon(urlIcono).getImage();
                     btn.setIcon(new javax.swing.ImageIcon(iconImg.getScaledInstance(120, 120, java.awt.Image.SCALE_SMOOTH)));
                 }
             } catch(Exception e){}
@@ -271,4 +317,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem4;
     // End of variables declaration//GEN-END:variables
+    private javax.swing.JButton btnUsuariosCentro;
+    private javax.swing.JButton btnLibrosCentro;
+    private javax.swing.JButton btnPrestamosCentro;
+    private javax.swing.JButton btnDevolucionesCentro;
 }

@@ -5,7 +5,6 @@
 package ec.edu.ups.bibliotecainterfaz.vista;
 
 import ec.edu.ups.bibliotecainterfaz.controlador.BibliotecaControlador;
-import ec.edu.ups.bibliotecainterfaz.controlador.BibliotecaControlador.IdiomaContext;
 import java.util.ResourceBundle;
 
 /**
@@ -28,7 +27,8 @@ public class VistaUsuario extends javax.swing.JInternalFrame {
     if (this.mensajes != null) {
         actualizarIdioma(this.mensajes);
     }
-    
+    cargarTabla();
+
     this.setClosable(true);
     this.setIconifiable(true);
     this.setMaximizable(true);
@@ -36,8 +36,8 @@ public class VistaUsuario extends javax.swing.JInternalFrame {
     
     }
     public void actualizarIdioma(java.util.ResourceBundle mensajesNuevos) {
-   this.mensajes = mensajes; 
-    
+    this.mensajes = mensajesNuevos;
+
     if (this.mensajes != null) {
         jLabel1.setText(this.mensajes.getString("lbl.cedula"));
         jLabel2.setText(this.mensajes.getString("lbl.nombre"));
@@ -45,8 +45,23 @@ public class VistaUsuario extends javax.swing.JInternalFrame {
         btnBuscar.setText(this.mensajes.getString("btn.buscar"));
         btnActualizar.setText(this.mensajes.getString("btn.actualizar"));
         btnEliminar.setText(this.mensajes.getString("btn.eliminar"));
+        this.setTitle(this.mensajes.getString("titulo.usuarios"));
+
+        javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tblUsuarios.getModel();
+        modelo.setColumnIdentifiers(new Object[]{
+            this.mensajes.getString("col.cedula"),
+            this.mensajes.getString("col.nombre")
+        });
     }
 }
+
+    public void cargarTabla() {
+        javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tblUsuarios.getModel();
+        modelo.setRowCount(0);
+        for (ec.edu.ups.bibliotecainterfaz.modelo.Usuario u : controlador.getUsuarioDao().listar()) {
+            modelo.addRow(new Object[]{u.getCedula(), u.getNombre()});
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -179,23 +194,16 @@ public class VistaUsuario extends javax.swing.JInternalFrame {
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
         String cedula = txtCedula.getText().trim();
         String nombre = txtNombre.getText().trim();
-    
-       
-        boolean exito = controlador.registrarUsuario(cedula, nombre);
-    
-        if (exito) {
-            
-            javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tblUsuarios.getModel();
-            modelo.addRow(new Object[]{cedula, nombre});
 
-           
-            javax.swing.JOptionPane.showMessageDialog(this, "Usuario registrado con éxito.");
-            txtCedula.setText(""); 
-            txtNombre.setText(""); 
-            
-        } else {
-            
-            javax.swing.JOptionPane.showMessageDialog(this, "Error: Campos vacíos o el usuario ya se registró antes.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        try {
+            controlador.registrarUsuario(cedula, nombre);
+            cargarTabla();
+            javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("exito.usuarioRegistrado"));
+            txtCedula.setText("");
+            txtNombre.setText("");
+        } catch (ec.edu.ups.bibliotecainterfaz.excepciones.ValidacionException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, ex.getMensajeLocalizado(mensajes),
+                mensajes.getString("dialogo.error"), javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnCrearActionPerformed
 
@@ -203,7 +211,7 @@ public class VistaUsuario extends javax.swing.JInternalFrame {
        String cedula = txtCedula.getText().trim();
     
         if (cedula.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Ingrese la cédula para buscar.");
+            javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("error.campoObligatorio").replace("{0}", mensajes.getString("lbl.cedula")));
             return;
         }
     
@@ -222,72 +230,49 @@ public class VistaUsuario extends javax.swing.JInternalFrame {
                 }
             }
         } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Usuario no encontrado.", "Aviso", javax.swing.JOptionPane.WARNING_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("error.usuarioNoEncontrado"), mensajes.getString("dialogo.aviso"), javax.swing.JOptionPane.WARNING_MESSAGE);
             txtNombre.setText(""); 
         }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
-       String cedula = txtCedula.getText().trim();
+        String cedula = txtCedula.getText().trim();
         String nombre = txtNombre.getText().trim();
-    
-        if (cedula.isEmpty() || nombre.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, llena todos los campos para actualizar.");
-            return;
-        }
-    
-        boolean exito = controlador.actualizarUsuario(cedula, nombre);
-    
-        if (exito) {
-            
-            javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tblUsuarios.getModel();
-            
-           
-            for (int i = 0; i < modelo.getRowCount(); i++) {
-                if (modelo.getValueAt(i, 0) != null && modelo.getValueAt(i, 0).toString().equals(cedula)) {
-                    modelo.setValueAt(nombre, i, 1); 
-                    break; 
-                }
-            }
 
-            javax.swing.JOptionPane.showMessageDialog(this, "Usuario actualizado correctamente.");
+        try {
+            controlador.actualizarUsuario(cedula, nombre);
+            cargarTabla();
+            javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("exito.usuarioActualizado"));
             txtCedula.setText("");
             txtNombre.setText("");
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Error: El usuario con esa cédula no existe.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } catch (ec.edu.ups.bibliotecainterfaz.excepciones.ValidacionException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, ex.getMensajeLocalizado(mensajes),
+                mensajes.getString("dialogo.error"), javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         String cedula = txtCedula.getText().trim();
-    
+
         if (cedula.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Ingrese la cédula del usuario que desea eliminar.");
+            javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("error.campoObligatorio").replace("{0}", mensajes.getString("lbl.cedula")));
             return;
         }
-    
-        int confirmar = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar este usuario?", "Confirmar", javax.swing.JOptionPane.YES_NO_OPTION);
-    
-        if (confirmar == javax.swing.JOptionPane.YES_OPTION) {
-            boolean exito = controlador.eliminarUsuario(cedula);
-            
-            if (exito) {
-                
-                javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tblUsuarios.getModel();
-                
-                
-                for (int i = 0; i < modelo.getRowCount(); i++) {
-                    if (modelo.getValueAt(i, 0) != null && modelo.getValueAt(i, 0).toString().equals(cedula)) {
-                        modelo.removeRow(i);
-                        break; 
-                    }
-                }
 
-                javax.swing.JOptionPane.showMessageDialog(this, "Usuario eliminado con éxito.");
+        int confirmar = javax.swing.JOptionPane.showConfirmDialog(this,
+            mensajes.getString("btn.eliminar") + " " + cedula,
+            mensajes.getString("dialogo.confirmar"), javax.swing.JOptionPane.YES_NO_OPTION);
+
+        if (confirmar == javax.swing.JOptionPane.YES_OPTION) {
+            try {
+                controlador.eliminarUsuario(cedula);
+                cargarTabla();
+                javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("exito.usuarioEliminado"));
                 txtCedula.setText("");
                 txtNombre.setText("");
-            } else {
-                javax.swing.JOptionPane.showMessageDialog(this, "Error: El usuario no existe.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            } catch (ec.edu.ups.bibliotecainterfaz.excepciones.ValidacionException ex) {
+                javax.swing.JOptionPane.showMessageDialog(this, ex.getMensajeLocalizado(mensajes),
+                    mensajes.getString("dialogo.error"), javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_btnEliminarActionPerformed

@@ -4,7 +4,6 @@
  */
 package ec.edu.ups.bibliotecainterfaz.vista;
 
-import ec.edu.ups.bibliotecainterfaz.controlador.BibliotecaControlador.IdiomaContext;
 import java.util.ResourceBundle;
 
 /**
@@ -22,24 +21,12 @@ public class VistaPrestamo extends javax.swing.JInternalFrame {
        this.mensajes = mensajes;
         initComponents();
         cargarTabla();
+        actualizarIdioma(this.mensajes);
         this.setClosable(true);
         this.setIconifiable(true);
         this.setMaximizable(true);
         this.setResizable(true);
-        
-       
     }
-    public void actualizarIdioma() {
-    java.util.ResourceBundle mensajes = IdiomaContext.get();
-
-    if (mensajes != null) {
-        jLabel1.setText(mensajes.getString("lbl.cedula"));
-        jLabel2.setText(mensajes.getString("lbl.codigo"));
-        jLabel3.setText(mensajes.getString("lbl.estado"));
-        btnCrear.setText(mensajes.getString("btn.prestamo"));
-        btnBuscar.setText(mensajes.getString("btn.buscar"));
-    }
-}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -169,26 +156,18 @@ public class VistaPrestamo extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtCedulaActionPerformed
 
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
-     String cedula = txtCedula.getText().trim();
+        String cedula = txtCedula.getText().trim();
         String codigo = txtCodigo.getText().trim();
-        
-        
-        boolean exito = controlador.prestarLibro(codigo, cedula);
 
-        if (exito) {
-           
-            javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tblPrestamos.getModel();
-            
-           
-            String fechaActual = new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date());
-            modelo.addRow(new Object[]{codigo, cedula, fechaActual, "PRESTADO"});
-            
-            javax.swing.JOptionPane.showMessageDialog(this, "Préstamo registrado con éxito.");
-            
+        try {
+            controlador.prestarLibro(codigo, cedula);
+            cargarTabla();
+            javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("exito.prestamoRegistrado"));
             txtCedula.setText("");
             txtCodigo.setText("");
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Error: El libro no existe, no está disponible o el usuario no existe.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } catch (ec.edu.ups.bibliotecainterfaz.excepciones.ValidacionException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, ex.getMensajeLocalizado(mensajes),
+                mensajes.getString("dialogo.error"), javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnCrearActionPerformed
 
@@ -196,7 +175,7 @@ public class VistaPrestamo extends javax.swing.JInternalFrame {
        String codigo = txtCodigo.getText().trim();
     
     if (codigo.isEmpty()) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Ingrese el código del libro para buscar el préstamo.");
+        javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("error.campoObligatorio").replace("{0}", mensajes.getString("lbl.codigo")));
         return;
     }
     
@@ -205,12 +184,18 @@ public class VistaPrestamo extends javax.swing.JInternalFrame {
     
     if (libro != null) {
         if (!libro.isDisponible()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "El libro '" + libro.getTitulo() + "' se encuentra actualmente prestado.", "Estado de Préstamo", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            txtEstado.setText(mensajes.getString("estado.prestado"));
+            javax.swing.JOptionPane.showMessageDialog(this,
+                java.text.MessageFormat.format(mensajes.getString("msg.libroPrestado"), libro.getTitulo()),
+                mensajes.getString("titulo.estadoPrestamo"), javax.swing.JOptionPane.INFORMATION_MESSAGE);
         } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "El libro '" + libro.getTitulo() + "' está disponible en la biblioteca.", "Estado de Préstamo", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            txtEstado.setText(mensajes.getString("estado.disponible"));
+            javax.swing.JOptionPane.showMessageDialog(this,
+                java.text.MessageFormat.format(mensajes.getString("msg.libroDisponible"), libro.getTitulo()),
+                mensajes.getString("titulo.estadoPrestamo"), javax.swing.JOptionPane.INFORMATION_MESSAGE);
         }
     } else {
-        javax.swing.JOptionPane.showMessageDialog(this, "El código del libro no existe.", "Aviso", javax.swing.JOptionPane.WARNING_MESSAGE);
+        javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("error.libroNoEncontrado"), mensajes.getString("dialogo.aviso"), javax.swing.JOptionPane.WARNING_MESSAGE);
     }
     
     
@@ -221,11 +206,17 @@ public class VistaPrestamo extends javax.swing.JInternalFrame {
         
        
         for (ec.edu.ups.bibliotecainterfaz.modelo.Prestamo p : controlador.getPrestamoDao().listar()) {
+            String estadoTexto;
+            if (p.getEstado() == ec.edu.ups.bibliotecainterfaz.modelo.EstadoPrestamo.DEVUELTO) {
+                estadoTexto = mensajes != null ? mensajes.getString("estado.devuelto") : "Devuelto";
+            } else {
+                estadoTexto = mensajes != null ? mensajes.getString("estado.activo") : "Activo";
+            }
             modelo.addRow(new Object[]{
                 p.getUsuario().getCedula(), 
                 p.getLibro().getCodigo(), 
                 p.getFechaPrestamo().toString(),
-                "PRESTADO"
+                estadoTexto
             });
         }
     }
@@ -240,6 +231,14 @@ public class VistaPrestamo extends javax.swing.JInternalFrame {
                 btnCrear.setText(mensajes.getString("btn.prestamo"));
                 btnBuscar.setText(mensajes.getString("btn.buscar"));
                 this.setTitle(mensajes.getString("titulo.prestamo"));
+
+                javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tblPrestamos.getModel();
+                modelo.setColumnIdentifiers(new Object[]{
+                    mensajes.getString("col.cedula"),
+                    mensajes.getString("col.codigo"),
+                    mensajes.getString("col.fecha"),
+                    mensajes.getString("col.estado")
+                });
             } catch (Exception e) {
                 System.out.println("Error al actualizar idioma en Prestamos: " + e.getMessage());
             }

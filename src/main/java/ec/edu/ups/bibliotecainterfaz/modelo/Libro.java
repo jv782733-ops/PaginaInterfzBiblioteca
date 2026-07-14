@@ -12,7 +12,7 @@ public class Libro {
     private String codigo;
     private String titulo;
     private String autor;
-    private boolean disponible;
+    private EstadoLibro estado;
 
     public Libro() {}
 
@@ -20,7 +20,7 @@ public class Libro {
         this.codigo = codigo;
         this.titulo = titulo;
         this.autor = autor;
-        this.disponible = true;
+        this.estado = EstadoLibro.DISPONIBLE;
     }
 
     public String getCodigo() { return codigo; }
@@ -32,6 +32,19 @@ public class Libro {
     public String getAutor() { return autor; }
     public void setAutor(String autor) { this.autor = autor; }
 
-    public boolean isDisponible() { return disponible; }
-    public void setDisponible(boolean disponible) { this.disponible = disponible; }
+    public EstadoLibro getEstado() { return estado; }
+    public void setEstado(EstadoLibro estado) { this.estado = estado; }
+
+    /**
+     * Metodo de conveniencia que se mantiene por compatibilidad con el
+     * codigo existente. El dato real que se guarda es el enum EstadoLibro;
+     * este metodo solo lo traduce a boolean para quien lo necesite asi.
+     */
+    public boolean isDisponible() {
+        return estado == EstadoLibro.DISPONIBLE;
+    }
+
+    public void setDisponible(boolean disponible) {
+        this.estado = disponible ? EstadoLibro.DISPONIBLE : EstadoLibro.PRESTADO;
+    }
 }

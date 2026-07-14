@@ -30,6 +30,8 @@ public class MenuInicio extends javax.swing.JFrame {
             jLabel1.setText(mensajes.getString("lbl.tituloPrincipal")); 
             btnEspanol.setText(mensajes.getString("btn.espanol"));
             btnIngles.setText(mensajes.getString("btn.ingles"));
+            btnEntrar.setText(mensajes.getString("btn.entrar"));
+            btnSalir.setText(mensajes.getString("btn.salir"));
             
         } catch (Exception e) {
             System.out.println("Error cargando el idioma " + lenguaje + ": " + e.getMessage());
@@ -161,7 +163,7 @@ public class MenuInicio extends javax.swing.JFrame {
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
    if (this.controlador == null) {
-        javax.swing.JOptionPane.showMessageDialog(this, "Error: Controlador no inicializado.");
+        javax.swing.JOptionPane.showMessageDialog(this, mensajes != null ? mensajes.getString("error.controladorNoInicializado") : "Error: Controlador no inicializado.");
         return;
     }
     VentanaPrincipal principal = new VentanaPrincipal(this.controlador, this.mensajes);
@@ -207,17 +209,6 @@ public class MenuInicio extends javax.swing.JFrame {
     
     new MenuInicio(controlador).setVisible(true);
 });
-       java.awt.EventQueue.invokeLater(() -> {
-        MenuInicio inicio = new MenuInicio(new BibliotecaControlador(
-            new ec.edu.ups.bibliotecainterfaz.idao.UsuarioDaoImpl(),
-            new ec.edu.ups.bibliotecainterfaz.idao.LibroDaoImpl(),
-            new ec.edu.ups.bibliotecainterfaz.idao.PrestamoDaoImpl()
-        ));
-        
-        
-        inicio.setExtendedState(javax.swing.JFrame.MAXIMIZED_BOTH);
-        inicio.setVisible(true);
-    });
     }
     
     private void centrarDiseno() {
@@ -268,13 +259,13 @@ public class MenuInicio extends javax.swing.JFrame {
 
       
         gbc.gridy = 1;
-        String rutaBase = "C:\\Users\\HP\\Documents\\NetBeansProjects\\BibliotecaInterfaz\\src\\main\\java\\ec\\edu\\ups\\bibliotecainterfaz\\imagenes\\";
+        String rutaBase = "/ec/edu/ups/bibliotecainterfaz/imagenes/";
         
         java.util.function.BiConsumer<javax.swing.JButton, String> ponerIcono = (btn, archivo) -> {
             try {
-                java.awt.Image iconImg = new javax.swing.ImageIcon(rutaBase + archivo).getImage();
-                if(iconImg != null && iconImg.getWidth(null) > 0) {
-                    
+                java.net.URL urlIcono = getClass().getResource(rutaBase + archivo);
+                if (urlIcono != null) {
+                    java.awt.Image iconImg = new javax.swing.ImageIcon(urlIcono).getImage();
                     btn.setIcon(new javax.swing.ImageIcon(iconImg.getScaledInstance(80, 80, java.awt.Image.SCALE_SMOOTH)));
                 }
             } catch(Exception e){}

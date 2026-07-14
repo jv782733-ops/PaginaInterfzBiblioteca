@@ -5,7 +5,6 @@
 package ec.edu.ups.bibliotecainterfaz.vista;
 
 import ec.edu.ups.bibliotecainterfaz.controlador.BibliotecaControlador;
-import ec.edu.ups.bibliotecainterfaz.controlador.BibliotecaControlador.IdiomaContext;
 import java.util.ResourceBundle;
 
 /**
@@ -26,20 +25,37 @@ private ResourceBundle mensajes;
         this.setIconifiable(true);
         this.setMaximizable(true);
         this.setResizable(true);
-    
-        
-    }
-     public void actualizarIdioma() {
-        ResourceBundle mensajes = IdiomaContext.get();
 
-        if (mensajes != null) {
+        actualizarIdioma();
+        cargarTabla();
+    }
+
+    public void actualizarIdioma() {
+        if (this.mensajes != null) {
             jLabel1.setText(mensajes.getString("lbl.codigo"));
             jLabel2.setText(mensajes.getString("lbl.titulo"));
             jLabel3.setText(mensajes.getString("lbl.autor"));
 
             btnCrear.setText(mensajes.getString("btn.guardar"));
             btnBuscar.setText(mensajes.getString("btn.buscar"));
+            btnActualizar.setText(mensajes.getString("btn.actualizar"));
             btnEliminar.setText(mensajes.getString("btn.eliminar"));
+            this.setTitle(mensajes.getString("titulo.libros"));
+
+            javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tblLibros.getModel();
+            modelo.setColumnIdentifiers(new Object[]{
+                mensajes.getString("col.codigo"),
+                mensajes.getString("col.titulo"),
+                mensajes.getString("col.autor")
+            });
+        }
+    }
+
+    public void cargarTabla() {
+        javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tblLibros.getModel();
+        modelo.setRowCount(0);
+        for (ec.edu.ups.bibliotecainterfaz.modelo.Libro l : controlador.getLibroDao().listar()) {
+            modelo.addRow(new Object[]{l.getCodigo(), l.getTitulo(), l.getAutor()});
         }
     }
 
@@ -155,32 +171,21 @@ private ResourceBundle mensajes;
     }//GEN-LAST:event_txtTituloActionPerformed
 
     private void btnCrearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearActionPerformed
-   String codigo = txtCodigo.getText().trim();
+        String codigo = txtCodigo.getText().trim();
         String titulo = txtTitulo.getText().trim();
         String autor = txtAutor.getText().trim();
 
-        
-        if (codigo.isEmpty() || titulo.isEmpty() || autor.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, llene todos los campos antes de guardar.");
-            return; 
-        }
-
-       
-        boolean exito = controlador.registrarLibro(codigo, titulo, autor);
-
-        if (exito) {
-            
-            javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tblLibros.getModel();
-            modelo.addRow(new Object[]{codigo, titulo, autor});
-
-            
-            javax.swing.JOptionPane.showMessageDialog(this, "¡Libro guardado exitosamente!");
+        try {
+            controlador.registrarLibro(codigo, titulo, autor);
+            cargarTabla();
+            javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("exito.libroRegistrado"));
             txtCodigo.setText("");
             txtTitulo.setText("");
             txtAutor.setText("");
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Error: El libro ya existe o hubo un problema.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
-        }    
+        } catch (ec.edu.ups.bibliotecainterfaz.excepciones.ValidacionException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, ex.getMensajeLocalizado(mensajes),
+                mensajes.getString("dialogo.error"), javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnCrearActionPerformed
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
@@ -188,7 +193,7 @@ private ResourceBundle mensajes;
         String codigo = txtCodigo.getText().trim();
     
         if (codigo.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Ingrese el código del libro para buscar.");
+            javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("error.campoObligatorio").replace("{0}", mensajes.getString("lbl.codigo")));
             return;
         }
    
@@ -209,7 +214,7 @@ private ResourceBundle mensajes;
             }
             
         } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Libro no encontrado.", "Aviso", javax.swing.JOptionPane.WARNING_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("error.libroNoEncontrado"), mensajes.getString("dialogo.aviso"), javax.swing.JOptionPane.WARNING_MESSAGE);
             
             txtTitulo.setText("");
             txtAutor.setText("");
@@ -217,72 +222,46 @@ private ResourceBundle mensajes;
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
-    String codigo = txtCodigo.getText().trim();
+        String codigo = txtCodigo.getText().trim();
         String titulo = txtTitulo.getText().trim();
         String autor = txtAutor.getText().trim();
-    
-        if (codigo.isEmpty() || titulo.isEmpty() || autor.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, llena todos los campos para actualizar.");
-            return;
-        }
-    
-        
-        boolean exito = controlador.actualizarLibro(codigo, titulo, autor);
-    
-        if (exito) {
-            
-            javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tblLibros.getModel();
-            
-           
-            for (int i = 0; i < modelo.getRowCount(); i++) {
-                if (modelo.getValueAt(i, 0) != null && modelo.getValueAt(i, 0).toString().equals(codigo)) {
-                    modelo.setValueAt(titulo, i, 1); 
-                    modelo.setValueAt(autor, i, 2);  
-                    break; 
-                }
-            }
 
-            javax.swing.JOptionPane.showMessageDialog(this, "Libro actualizado correctamente.");
+        try {
+            controlador.actualizarLibro(codigo, titulo, autor);
+            cargarTabla();
+            javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("exito.libroActualizado"));
             txtCodigo.setText("");
             txtTitulo.setText("");
             txtAutor.setText("");
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Error: El libro con ese código no existe.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } catch (ec.edu.ups.bibliotecainterfaz.excepciones.ValidacionException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, ex.getMensajeLocalizado(mensajes),
+                mensajes.getString("dialogo.error"), javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnActualizarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
-    String codigo = txtCodigo.getText().trim();
-    
+        String codigo = txtCodigo.getText().trim();
+
         if (codigo.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Ingrese el código del libro que desea eliminar.");
+            javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("error.campoObligatorio").replace("{0}", mensajes.getString("lbl.codigo")));
             return;
         }
-    
-        int confirmar = javax.swing.JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar este libro?", "Confirmar", javax.swing.JOptionPane.YES_NO_OPTION);
-    
-        if (confirmar == javax.swing.JOptionPane.YES_OPTION) {
-            
-            boolean exito = controlador.eliminarLibro(codigo);
-            
-            if (exito) {
-                
-                javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel) tblLibros.getModel();
-                
-                
-                for (int i = 0; i < modelo.getRowCount(); i++) {
-                    if (modelo.getValueAt(i, 0) != null && modelo.getValueAt(i, 0).toString().equals(codigo)) {
-                        modelo.removeRow(i); 
-                        break; 
-                    }
-                }
 
-                javax.swing.JOptionPane.showMessageDialog(this, "Libro eliminado con éxito.");
+        int confirmar = javax.swing.JOptionPane.showConfirmDialog(this,
+            mensajes.getString("btn.eliminar") + " " + txtCodigo.getText(),
+            mensajes.getString("dialogo.confirmar"), javax.swing.JOptionPane.YES_NO_OPTION);
+
+        if (confirmar == javax.swing.JOptionPane.YES_OPTION) {
+            try {
+                controlador.eliminarLibro(codigo);
+                cargarTabla();
+                javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("exito.libroEliminado"));
                 txtCodigo.setText("");
                 txtTitulo.setText("");
                 txtAutor.setText("");
-            } else {
-                javax.swing.JOptionPane.showMessageDialog(this, "Error: El libro no existe.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+            } catch (ec.edu.ups.bibliotecainterfaz.excepciones.ValidacionException ex) {
+                javax.swing.JOptionPane.showMessageDialog(this, ex.getMensajeLocalizado(mensajes),
+                    mensajes.getString("dialogo.error"), javax.swing.JOptionPane.ERROR_MESSAGE);
             }
         }
     }//GEN-LAST:event_btnEliminarActionPerformed

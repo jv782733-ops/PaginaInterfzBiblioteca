@@ -4,7 +4,6 @@
  */
 package ec.edu.ups.bibliotecainterfaz.vista;
 
-import ec.edu.ups.bibliotecainterfaz.controlador.BibliotecaControlador.IdiomaContext;
 import java.util.ResourceBundle;
 
 /**
@@ -21,23 +20,25 @@ private ResourceBundle mensajes;
         this.controlador = controlador;
        this.mensajes = mensajes;
         initComponents();
+        txtFecha.setModel(new javax.swing.SpinnerDateModel());
+        txtFecha.setEditor(new javax.swing.JSpinner.DateEditor(txtFecha, "dd/MM/yyyy"));
+        actualizarIdioma(this.mensajes);
         this.setClosable(true);
         this.setIconifiable(true);
         this.setMaximizable(true);
         this.setResizable(true);
-       
-         
     }
-    public void actualizarIdioma() {
-    java.util.ResourceBundle mensajes = IdiomaContext.get();
 
-    if (mensajes != null) {
-        jLabel1.setText(mensajes.getString("lbl.codigo"));
-        jLabel2.setText(mensajes.getString("lbl.cedula"));
-        jLabel3.setText(mensajes.getString("lbl.fecha"));
-        btnDevolver.setText(mensajes.getString("btn.devolucion"));
+    public void actualizarIdioma(java.util.ResourceBundle mensajes) {
+        this.mensajes = mensajes;
+        if (mensajes != null) {
+            jLabel1.setText(mensajes.getString("lbl.codigo"));
+            jLabel2.setText(mensajes.getString("lbl.cedula"));
+            jLabel3.setText(mensajes.getString("lbl.fecha"));
+            btnDevolver.setText(mensajes.getString("btn.devolver"));
+            this.setTitle(mensajes.getString("titulo.devolucion"));
+        }
     }
-}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -102,25 +103,16 @@ private ResourceBundle mensajes;
     }//GEN-LAST:event_txtCodigoLibroActionPerformed
 
     private void btnDevolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDevolverActionPerformed
-     String codigo = txtCodigoLibro.getText().trim(); 
-        
-        if (codigo.isEmpty()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Por favor, ingrese el código del libro.");
-            return;
-        }
+        String codigo = txtCodigoLibro.getText().trim();
+        java.util.Date fechaDevolucion = (java.util.Date) txtFecha.getValue();
 
-        
-        boolean exito = controlador.devolverLibro(codigo);
-
-        if (exito) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Devolución registrada con éxito. El libro está disponible de nuevo.");
-            
-           
+        try {
+            controlador.devolverLibro(codigo, fechaDevolucion);
+            javax.swing.JOptionPane.showMessageDialog(this, mensajes.getString("exito.devolucionRegistrada"));
             txtCodigoLibro.setText("");
-            
-        } else {
-           
-            javax.swing.JOptionPane.showMessageDialog(this, "Error: No se pudo realizar la devolución. Verifique el código.", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
+        } catch (ec.edu.ups.bibliotecainterfaz.excepciones.ValidacionException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, ex.getMensajeLocalizado(mensajes),
+                mensajes.getString("dialogo.error"), javax.swing.JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnDevolverActionPerformed
 
