@@ -20,9 +20,8 @@ public class BibliotecaInterfaz {
 
     public static void main(String[] args) {
 
-        // Le preguntamos al usuario que mecanismo de persistencia desea usar
-        // ANTES de crear el controlador, ya que el controlador necesita
-        // recibir un conjunto especifico de DAO (en memoria o en archivo).
+        // Le preguntamos al usuario que mecanismo  desea usar
+        // (en memoria o en archivo).
         Object[] opciones = {"Memoria / Memory", "Archivo (.ups) / File (.ups)"};
         int seleccion = javax.swing.JOptionPane.showOptionDialog(
             null,
@@ -45,12 +44,12 @@ public class BibliotecaInterfaz {
         prestamoDAO prestamoDao;
 
         if (seleccion == 0) {
-            // Persistencia en memoria (los datos no se conservan al cerrar)
+            //  en memoria (los datos no se conservan al cerrar)
             usuarioDao = new UsuarioDaoImpl();
             libroDao = new LibroDaoImpl();
             prestamoDao = new PrestamoDaoImpl();
         } else {
-            // Persistencia en archivos binarios .ups (opcion por defecto)
+            //  en archivos binarios .ups 
             usuarioDao = new UsuarioDaoArchivo();
             libroDao = new LibroDaoArchivo();
             prestamoDao = new PrestamoDaoArchivo();

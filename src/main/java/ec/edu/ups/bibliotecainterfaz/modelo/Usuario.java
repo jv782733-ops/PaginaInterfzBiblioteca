@@ -4,10 +4,6 @@
  */
 package ec.edu.ups.bibliotecainterfaz.modelo;
 
-/**
- *
- * @author HP
- */
 public class Usuario implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
     private String cedula;

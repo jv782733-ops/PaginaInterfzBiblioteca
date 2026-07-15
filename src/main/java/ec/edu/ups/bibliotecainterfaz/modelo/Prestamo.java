@@ -22,7 +22,7 @@ public class Prestamo implements java.io.Serializable {
         this.libro = libro;
         this.usuario = usuario;
         this.fechaPrestamo = fechaPrestamo;
-        this.fechaDevolucion = null; // No devuelto aún
+        this.fechaDevolucion = null; // No se dvuelve tdaviA
         this.estado = EstadoPrestamo.ACTIVO;
     }
 

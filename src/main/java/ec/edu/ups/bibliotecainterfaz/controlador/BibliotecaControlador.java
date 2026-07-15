@@ -18,15 +18,7 @@ import ec.edu.ups.bibliotecainterfaz.modelo.Usuario;
 import ec.edu.ups.bibliotecainterfaz.util.Validador;
 import java.util.Date;
 
-/**
- * Controlador principal del sistema (patron MVC). A partir de esta version
- * el controlador valida los datos de entrada antes de tocar los DAO, y
- * lanza excepciones propias en lugar de simplemente devolver true/false.
- * Esto permite que la Vista pueda mostrar al usuario exactamente por que
- * fallo la operacion, con un mensaje claro y traducido.
- *
- * @author HP
- */
+
 public class BibliotecaControlador {
     private usuarioDAO usuarioDao;
     private libroDAO libroDao;
@@ -38,10 +30,8 @@ public class BibliotecaControlador {
         this.prestamoDao = prestamoDao;
     }
 
-    // ---------------------------------------------------------------
+    
     // USUARIOS
-    // ---------------------------------------------------------------
-
     public void registrarUsuario(String cedula, String nombre) throws CampoObligatorioException,
             LongitudInvalidaException, ValorNumericoInvalidoException, RestriccionNegocioException {
         Validador.validarCedula(cedula);
@@ -76,9 +66,9 @@ public class BibliotecaControlador {
         usuarioDao.eliminar(cedula);
     }
 
-    // ---------------------------------------------------------------
+    
     // LIBROS
-    // ---------------------------------------------------------------
+    
 
     public void registrarLibro(String codigo, String titulo, String autor) throws CampoObligatorioException,
             LongitudInvalidaException, RestriccionNegocioException {
@@ -122,9 +112,8 @@ public class BibliotecaControlador {
         libroDao.eliminar(codigo);
     }
 
-    // ---------------------------------------------------------------
+    
     // PRESTAMOS Y DEVOLUCIONES
-    // ---------------------------------------------------------------
 
     public void prestarLibro(String codigoLibro, String cedulaUsuario) throws CampoObligatorioException,
             RestriccionNegocioException {

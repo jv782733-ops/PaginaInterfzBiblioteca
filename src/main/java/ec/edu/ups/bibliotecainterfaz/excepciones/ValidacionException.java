@@ -3,19 +3,7 @@ package ec.edu.ups.bibliotecainterfaz.excepciones;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-/**
- * Clase base para todas las excepciones propias de validacion del sistema.
- * En lugar de guardar el mensaje de error ya armado en un idioma fijo,
- * guarda la CLAVE del mensaje (para buscarla en el ResourceBundle) junto
- * con los argumentos que se deben insertar en el texto (por ejemplo el
- * nombre del campo, el minimo y maximo permitido, etc).
- *
- * Esto permite que la misma excepcion se pueda mostrar en español o en
- * ingles segun el idioma activo en la aplicacion, sin tener que crear
- * una excepcion distinta por cada idioma.
- *
- * @author Grupo Biblioteca
- */
+
 public abstract class ValidacionException extends Exception {
 
     private final String claveMensaje;

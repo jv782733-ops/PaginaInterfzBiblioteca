@@ -9,10 +9,7 @@ import ec.edu.ups.bibliotecainterfaz.modelo.Prestamo;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author HP
- */
+
 public class PrestamoDaoImpl implements prestamoDAO {
     private List<Prestamo> listaPrestamos = new ArrayList<>();
 

@@ -36,11 +36,7 @@ public class Libro implements java.io.Serializable {
     public EstadoLibro getEstado() { return estado; }
     public void setEstado(EstadoLibro estado) { this.estado = estado; }
 
-    /**
-     * Metodo de conveniencia que se mantiene por compatibilidad con el
-     * codigo existente. El dato real que se guarda es el enum EstadoLibro;
-     * este metodo solo lo traduce a boolean para quien lo necesite asi.
-     */
+    
     public boolean isDisponible() {
         return estado == EstadoLibro.DISPONIBLE;
     }

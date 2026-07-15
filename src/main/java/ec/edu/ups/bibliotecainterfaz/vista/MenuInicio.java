@@ -185,12 +185,7 @@ public class MenuInicio extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        // Este main() ya no arma su propio controlador: delega todo al
-        // punto de entrada real de la aplicacion (BibliotecaInterfaz),
-        // que es el que muestra el selector de persistencia (memoria/archivo)
-        // antes de crear la ventana de inicio. Asi, sin importar si se
-        // ejecuta el proyecto completo o este archivo en particular desde
-        // NetBeans, el comportamiento es siempre el mismo.
+        
         ec.edu.ups.bibliotecainterfaz.BibliotecaInterfaz.main(args);
     }
     

@@ -6,13 +6,7 @@ import ec.edu.ups.bibliotecainterfaz.util.ArchivoUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implementacion del DAO de prestamos que persiste la informacion en un
- * archivo binario propio (prestamos.ups). Ver LibroDaoArchivo para una
- * explicacion del mecanismo de carga/guardado.
- *
- * @author Grupo Biblioteca
- */
+
 public class PrestamoDaoArchivo implements prestamoDAO {
 
     private static final String ARCHIVO = "prestamos.ups";

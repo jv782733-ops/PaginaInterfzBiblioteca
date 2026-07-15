@@ -9,10 +9,7 @@ import ec.edu.ups.bibliotecainterfaz.modelo.Usuario;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author HP
- */
+
 public class UsuarioDaoImpl implements usuarioDAO {
     private List<Usuario> listaUsuarios = new ArrayList<>();
 

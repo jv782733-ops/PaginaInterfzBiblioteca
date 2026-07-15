@@ -9,10 +9,7 @@ import ec.edu.ups.bibliotecainterfaz.modelo.Libro;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- *
- * @author HP
- */
+
 public class LibroDaoImpl implements libroDAO {
     private List<Libro> listaLibros = new ArrayList<>();
 

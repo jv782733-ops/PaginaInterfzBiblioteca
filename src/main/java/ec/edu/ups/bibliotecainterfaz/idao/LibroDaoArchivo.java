@@ -6,16 +6,7 @@ import ec.edu.ups.bibliotecainterfaz.util.ArchivoUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Implementacion del DAO de libros que persiste la informacion en un
- * archivo binario propio (libros.ups). Mantiene una lista en memoria
- * como cache, que se recarga desde el archivo al iniciar y se vuelve
- * a guardar en disco cada vez que hay un cambio (crear/actualizar/
- * eliminar), para que los datos se conserven entre ejecuciones del
- * programa.
- *
- * @author Grupo Biblioteca
- */
+
 public class LibroDaoArchivo implements libroDAO {
 
     private static final String ARCHIVO = "libros.ups";
